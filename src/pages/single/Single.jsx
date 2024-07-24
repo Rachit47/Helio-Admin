@@ -1,29 +1,115 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./single.scss";
-import { useParams } from "react-router-dom";
-import { userRows } from "../../datatablesource";
+import { useParams, useNavigate } from "react-router-dom";
+import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import Chart from "../../components/chart/Chart";
-import { useNavigate } from "react-router-dom";
-// import List from "../../components/table/Table";
-import { userSpendingdata } from "../../datatablesource";
+
 const Single = () => {
   const { userId } = useParams(); // Extracting userId from the route params
+  const [eachUserData, setEachUserData] = useState(null);
+  const [spendingData, setSpendingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({ name: "", Total: 0 });
 
-  const userIdNum = parseInt(userId);
+  useEffect(() => {
+    const unsubUsers = onSnapshot(
+      doc(db, "users", userId),
+      (doc) => {
+        if (doc.exists()) {
+          setEachUserData(doc.data() || []);
+        } else {
+          setEachUserData([]);
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.log(error);
+        setLoading(false);
+      }
+    );
 
-  const userData = userRows.find((user) => user.id === userIdNum);
-  const SpendingData = userSpendingdata.find((user) => user.id === userIdNum);
+    const unsubSpending = onSnapshot(
+      doc(db, "userSpendingdata", userId),
+      (doc) => {
+        if (doc.exists()) {
+          setSpendingData(doc.data().data || []);
+        } else {
+          setSpendingData([]);
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.log(error);
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      unsubUsers();
+      unsubSpending();
+    };
+  }, [userId]);
 
   const navigate = useNavigate();
   const GoBackHandler = () => {
     navigate(-1);
   };
 
-  if (!userData) {
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const docRef = doc(db, "userSpendingdata", userId);
+
+      const docSnap = await getDoc(docRef);
+      const existingData = docSnap.exists() ? docSnap.data() : { data: [] };
+
+      let monthExists = false;
+      const updatedSpendingdata = existingData.data.map((entry) => {
+        if (entry.name === formData.name) {
+          monthExists = true;
+          return { ...entry, Total: Number(formData.Total) };
+        }
+        return entry;
+      });
+
+      if (!monthExists) {
+        updatedSpendingdata.push({
+          name: formData.name,
+          Total: Number(formData.Total),
+        });
+      }
+
+      const updatedData = {
+        ...existingData,
+        data: updatedSpendingdata,
+      };
+
+      await setDoc(docRef, updatedData);
+
+      setFormData({ name: "", Total: 0 }); // Clear form after submission
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
+
+  if (loading) {
+    return <div className="loading">Loading...</div>; // Display a loading indicator while fetching data
+  }
+  if (!eachUserData) {
     return <div>User not found for ID: {userId}</div>;
   }
+
   return (
     <div className="single">
       <Sidebar />
@@ -33,47 +119,63 @@ const Single = () => {
           <button onClick={GoBackHandler} className="GoBackButton">
             Go Back
           </button>
+        </div>
+        <div className="left-right">
           <div className="left">
-            {/* <div className="editButton">Edit</div> */}
             <h1 className="title">Customer Information</h1>
 
             <div className="item">
-              <img src={userData.img} alt="" className="itemImg" />
+              <img src={eachUserData.img} alt="" className="itemImg" />
               <div className="details">
-                <h1 className="itemTitle">{userData.username}</h1>
+                <h1 className="itemTitle">{eachUserData.username}</h1>
                 <div className="detailItem">
                   <span className="itemKey">Email:</span>
-                  <span className="itemKey">{userData.email}</span>
+                  <span className="itemValue">{eachUserData.email}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Phone:</span>
-                  <span className="itemKey">{userData.phoneno}</span>
+                  <span className="itemValue">{eachUserData.phone}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">City:</span>
-                  <span className="itemKey">{userData.city}</span>
+                  <span className="itemValue">{eachUserData.city}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Country:</span>
-                  <span className="itemKey">{userData.country}</span>
+                  <span className="itemValue">{eachUserData.country}</span>
                 </div>
               </div>
             </div>
           </div>
           <div className="right">
-            <Chart
-              aspect={3 / 1}
-              title="Customer Spending (Last 6 Months)"
-              data={SpendingData.data}
-            />
+            <h2>Add User Spending Data</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="formInput">
+                <label>Month</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Month"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
+                <label>Total Expenditure</label>
+                <input
+                  type="number"
+                  name="Total"
+                  placeholder="Total"
+                  value={formData.Total}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <button type="submit">Send</button>
+            </form>
           </div>
         </div>
-        {/* <div className="bottom">
-          <h1 className="title">Information</h1>
-          <div className="item"></div>
-
-          <List />
-        </div> */}
+        {/* Form for Adding Single Spending Data */}
+        <div className="bottom">
+          <Chart aspect={3 / 1} title="Customer Spending" data={spendingData} />
+        </div>
       </div>
     </div>
   );

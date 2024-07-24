@@ -1,51 +1,180 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./widget.scss";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import MonetizationOnRoundedIcon from "@mui/icons-material/MonetizationOnRounded";
 import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
 import {
-  userRows,
-  transactiondata,
-  latestTransactionsData,
-} from "../../datatablesource";
+  collection,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 import { Link } from "react-router-dom";
+import { getTransactionalData } from "../../pages/home/ExportTransactionalData";
+
 const Widget = ({ type }) => {
-  const getPreviousData = () => {
-    return {
-      users: 180, // Example previous user count
-      orders: 110, // Example previous order count
-      balance: 15000, // Example previous balance
-    };
-  };
-  const previousData = getPreviousData();
+  const [usersDiff, setUsersDiff] = useState(null);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [Balance, setBalance] = useState(0);
+  const [ordersDiff, setOrdersDiff] = useState(null);
+  const [totalOrders, setTotalOrders] = useState(0);
+
   const calculatePercentDiff = (currentValue, previousValue) => {
-    if (previousValue === 0) return 100;
+    if (previousValue === 0) return currentValue === 0 ? 0 : 100;
     return ((currentValue - previousValue) / previousValue) * 100;
   };
 
-  const totalUsers = userRows.length + previousData.users;
-  let totalOrders = latestTransactionsData.length + previousData.orders;
+  useEffect(() => {
+    // Real-time listener for total users
+    const unsubTotalUsers = onSnapshot(
+      collection(db, "users"),
+      (snapshot) => {
+        setTotalUsers(snapshot.docs.length);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
 
-  let totalLatesttransEarnings = 0;
+    // Real-time listener for total orders
+    const unsubTotalOrders = onSnapshot(
+      collection(db, "orders"),
+      (snapshot) => {
+        setTotalOrders(snapshot.docs.length);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    const unsubBalance = onSnapshot(
+      collection(db, "balance"),
+      (snapshot) => {
+        let bal = 0;
+        snapshot.docs.forEach((doc) => {
+          const docData = doc.data();
+          bal += docData.staticAmount;
+        });
+        setBalance(bal);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    //Extracting the end-points (dates) of current month and the last month
+    const today = new Date();
+
+    const firstDayOfThisMonth = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1
+    );
+    const firstDayOfLastMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() - 1,
+      1
+    );
+    const lastDayOfLastMonth = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      0
+    );
+
+    const fetchUserDiffData = async () => {
+      const thisMonthQuery = query(
+        collection(db, "users"),
+        where("timeStamp", ">=", firstDayOfThisMonth),
+        where("timeStamp", "<=", today)
+      );
+      const lastMonthQuery = query(
+        collection(db, "users"),
+        where("timeStamp", ">=", firstDayOfLastMonth),
+        where("timeStamp", "<=", lastDayOfLastMonth)
+      );
+
+      const thisMonthData = await getDocs(thisMonthQuery);
+      const lastMonthData = await getDocs(lastMonthQuery);
+
+      setUsersDiff(
+        calculatePercentDiff(
+          thisMonthData.docs.length,
+          lastMonthData.docs.length
+        )
+      );
+    };
+
+    const fetchOrderDiffData = async () => {
+      const thisMonthOrdersQuery = query(
+        collection(db, "orders"),
+        where("orderDate", ">=", firstDayOfThisMonth),
+        where("orderDate", "<=", today)
+      );
+      const lastMonthOrdersQuery = query(
+        collection(db, "orders"),
+        where("orderDate", ">=", firstDayOfLastMonth),
+        where("orderDate", "<=", lastDayOfLastMonth)
+      );
+
+      const thisMonthOrdersData = await getDocs(thisMonthOrdersQuery);
+      const lastMonthOrdersData = await getDocs(lastMonthOrdersQuery);
+
+      setOrdersDiff(
+        calculatePercentDiff(
+          thisMonthOrdersData.docs.length,
+          lastMonthOrdersData.docs.length
+        )
+      );
+    };
+
+    // Fetch data initially
+    fetchUserDiffData();
+    fetchOrderDiffData();
+
+    // Real-time listener for user statistics
+    const unsubUserStats = onSnapshot(
+      collection(db, "users"),
+      async (snapshot) => {
+        await fetchUserDiffData();
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    // Real-time listener for order statistics
+    const unsubOrderStats = onSnapshot(
+      collection(db, "orders"),
+      async (snapshot) => {
+        await fetchOrderDiffData();
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    return () => {
+      unsubTotalUsers();
+      unsubUserStats();
+      unsubTotalOrders();
+      unsubOrderStats();
+      unsubBalance();
+    };
+  }, []);
+
   let totaltransactionEarnings = 0;
 
-  latestTransactionsData.forEach((t) => {
-    totalLatesttransEarnings += t.amount;
-  });
-
+  const transactiondata = getTransactionalData();
   transactiondata.forEach((t) => {
     totaltransactionEarnings += t.Total;
   });
 
-  const totalEarnings = totalLatesttransEarnings + totaltransactionEarnings;
-
-  console.log(totalLatesttransEarnings);
-  console.log(totaltransactionEarnings);
-
-  const netPreviousBalance = previousData.balance + totaltransactionEarnings;
-  const totalBalance = previousData.balance + totalEarnings;
+  const totalBalance = Balance + totaltransactionEarnings;
 
   let data;
   switch (type) {
@@ -54,11 +183,11 @@ const Widget = ({ type }) => {
         title: "USERS",
         page: "users",
         value: totalUsers,
-        percentDiff: Math.abs(
-          calculatePercentDiff(totalUsers, previousData.users)
-        ).toFixed(2),
+        sign: usersDiff < 0 ? true : false,
+        percentDiff: usersDiff ? Math.abs(usersDiff).toFixed(2) : 0,
+        showDiff: true,
         isMoney: false,
-        link: "See All Users",
+        link: "View All Customers",
         icon: (
           <PersonRoundedIcon
             className="icon"
@@ -71,11 +200,11 @@ const Widget = ({ type }) => {
       data = {
         title: "ORDERS",
         value: totalOrders,
+        page: "orders",
+        showDiff: true,
         isMoney: false,
-        percentDiff: calculatePercentDiff(
-          totalOrders,
-          previousData.orders
-        ).toFixed(2),
+        sign: ordersDiff < 0 ? true : false,
+        percentDiff: ordersDiff ? Math.abs(ordersDiff).toFixed(2) : 0,
         link: "View All Orders",
         icon: (
           <ShoppingCartRoundedIcon
@@ -91,13 +220,9 @@ const Widget = ({ type }) => {
     case "earning":
       data = {
         title: "EARNINGS",
-        value: totalEarnings,
-        percentDiff: calculatePercentDiff(
-          totalEarnings,
-          totaltransactionEarnings
-        ).toFixed(2),
+        value: totaltransactionEarnings,
+        showDiff: false,
         isMoney: true,
-        //link: "View net earnings",
         icon: (
           <MonetizationOnRoundedIcon
             className="icon"
@@ -108,14 +233,10 @@ const Widget = ({ type }) => {
       break;
     case "balance":
       data = {
-        title: "BALANCE",
+        title: "NET BALANCE",
         isMoney: true,
         value: totalBalance,
-        percentDiff: calculatePercentDiff(
-          totalBalance,
-          netPreviousBalance
-        ).toFixed(2),
-        // link: "View total balance",
+        showDiff: false,
         icon: (
           <AccountBalanceWalletRoundedIcon
             className="icon"
@@ -136,16 +257,24 @@ const Widget = ({ type }) => {
           {data.isMoney && "$"} {data.value}
         </span>
         <span className="link">
-            <Link to={`${data.page}`} style={{ textDecoration: "none" }}>
+          <Link to={`${data.page}`} style={{ textDecoration: "none" }}>
             {data.link}
           </Link>
         </span>
       </div>
       <div className="right">
-        <div className="percentage positive">
-          <ExpandLessRoundedIcon />
-          {data.percentDiff}%
-        </div>
+        {data.showDiff &&
+          (data.sign === false ? (
+            <div className="percentage positive">
+              <ExpandLessRoundedIcon />
+              {data.percentDiff}%
+            </div>
+          ) : (
+            <div className="percentage negative">
+              <ExpandMoreRoundedIcon />
+              {data.percentDiff}%
+            </div>
+          ))}
         {data.icon}
       </div>
     </div>

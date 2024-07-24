@@ -24,6 +24,7 @@
         border: none;
         outline: none;
         background: transparent;
+        color: gray;
 
         &::placeholder {
           font-size: 12px;
@@ -38,6 +39,9 @@
         display: flex;
         align-items: center;
         margin-right: 20px;
+        font-family: "Saira", sans-serif;
+        font-optical-sizing: auto;
+        font-size: 14px;
         position: relative;
         .icon {
           cursor: pointer;

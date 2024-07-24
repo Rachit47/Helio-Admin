@@ -1,24 +1,60 @@
 import "./datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { userColumns, userRows } from "../../datatablesource";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-
+import { userColumns } from "../../datatablesource";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 const Datatable = () => {
-  const [data, setData] = useState(userRows);
+  const [data, setData] = useState([]);
 
-  const handleDelete = (id) => {
-    setData(data.filter((item) => item.id !== id));
-  };
-  const navigate = useNavigate();
-  const GoBackHandler = () => {
-    navigate(-1);
+  useEffect(() => {
+    //Real-time listening
+    const unsub = onSnapshot(
+      collection(db, "users"),
+      (snapshot) => {
+        let list = [];
+        snapshot.docs.forEach((doc) => {
+          const docData = doc.data();
+          list.push({ 
+            id: doc.id,
+            username: docData.username,
+            img: docData.img,
+            email: docData.email,
+            phone: docData.phone,
+            city: docData.city,
+            country: docData.country,
+          });
+        });
+        setData(list);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+    return () => {
+      unsub();
+    };
+  }, []);
+  
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, "users", id));
+      setData(data.filter((item) => item.id !== id));
+    } catch (err) {
+      console.log(err);
+    }
   };
   const actionColumn = [
     {
       field: "action",
       headerName: "Action",
-      width: 200,
+      width: 180,
       renderCell: (params) => {
         return (
           <div className="cellAction">
@@ -46,9 +82,9 @@ const Datatable = () => {
         <Link to="/users/new" className="link">
           Add New
         </Link>
-        <button onClick={GoBackHandler} className="GoBackButton">
+        {/* <button onClick={GoBackHandler} className="GoBackButton">
           Go Back
-        </button>
+        </button> */}
       </div>
       <DataGrid
         className="datagrid"

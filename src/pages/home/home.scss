@@ -3,30 +3,18 @@
   .homeContainer {
     flex: 6;
     padding: 10px;
-
+    overflow-y: hidden;
+    width: 100%;
     .widgets,
     .charts {
       display: flex;
       flex-wrap: wrap; // Allow wrapping of widgets and charts
-      padding: 20px;
+      padding: 21px;
       gap: 20px;
     }
 
     .charts {
       padding: 5px 20px;
-    }
-
-    .listContainer {
-      -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-      box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-      padding: 20px;
-      margin: 20px;
-
-      .listTitle {
-        font-weight: 500;
-        color: gray;
-        margin-bottom: 15px;
-      }
     }
   }
 }
@@ -89,17 +77,6 @@
         padding: 4px;
         flex-direction: column;
       }
-
-      .listContainer {
-        padding: 10px;
-        margin: 10px;
-
-        .listTitle {
-          font-weight: 500;
-          color: gray;
-          margin-bottom: 10px;
-        }
-      }
     }
   }
 }
@@ -121,17 +98,6 @@
       .charts {
         padding: 2px;
         flex-direction: column;
-      }
-
-      .listContainer {
-        padding: 5px;
-        margin: 5px;
-
-        .listTitle {
-          font-weight: 500;
-          color: gray;
-          margin-bottom: 5px;
-        }
       }
     }
   }
@@ -155,17 +121,6 @@
         padding: 1.5px;
         flex-direction: column;
       }
-
-      .listContainer {
-        padding: 4px;
-        margin: 4px;
-
-        .listTitle {
-          font-weight: 500;
-          color: gray;
-          margin-bottom: 4px;
-        }
-      }
     }
   }
 }
@@ -188,17 +143,6 @@
         padding: 1.25px;
         flex-direction: column;
       }
-
-      .listContainer {
-        padding: 3px;
-        margin: 3px;
-
-        .listTitle {
-          font-weight: 500;
-          color: gray;
-          margin-bottom: 3px;
-        }
-      }
     }
   }
 }
@@ -220,17 +164,6 @@
       .charts {
         padding: 1px;
         flex-direction: column;
-      }
-
-      .listContainer {
-        padding: 2px;
-        margin: 2px;
-
-        .listTitle {
-          font-weight: 500;
-          color: gray;
-          margin-bottom: 2px;
-        }
       }
     }
   }

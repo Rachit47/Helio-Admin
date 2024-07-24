@@ -1,10 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
-import { UnitsTotal } from "../../datatablesource";
 import "./featured.scss";
-
+import { onSnapshot, collection } from "firebase/firestore";
+import { db } from "../../firebase";
 const Featured = () => {
   const [activeIndex, setActiveIndex] = useState(null);
+  const [productsData, setProductsData] = useState([]);
+  const [productUnitsData, setProductUnitsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubUnitsTotal = onSnapshot(
+      collection(db, "productUnitsSold"),
+      (snapshot) => {
+        let unitsData = [];
+        snapshot.forEach((doc) => {
+          unitsData.push({ id: doc.id, ...doc.data() });
+        });
+        setProductUnitsData(unitsData);
+        setLoading(false);
+      },
+      (error) => {
+        console.log(error);
+        setLoading(false);
+      }
+    );
+
+    const unsubProducts = onSnapshot(
+      collection(db, "products"),
+      (snapshot) => {
+        let productData = [];
+        snapshot.forEach((doc) => {
+          productData.push({ id: doc.id, ...doc.data() });
+        });
+        setProductsData(productData);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+    return () => {
+      unsubUnitsTotal();
+      unsubProducts();
+    };
+  }, []);
+
+  let unitsTotal = [];
+  for (let product of productUnitsData) {
+    let eachProductTotalUnits = 0;
+    for (let productData of product.sales) {
+      eachProductTotalUnits += productData.units;
+    }
+    const prodName = productsData.find((p) => p.id === product.id)?.title;
+    unitsTotal.push({ name: prodName, value: eachProductTotalUnits });
+  }
+
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
 
   const renderActiveShape = (props) => {
     const RADIAN = Math.PI / 180;
@@ -59,12 +113,12 @@ const Featured = () => {
           stroke={fill}
           fill="none"
         />
-        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+        <circle cx={ex} cy={ey} r={2} fill={fill} stroke={fill} />
         <text
           x={ex + (cos >= 0 ? 1 : -1) * 12}
           y={ey}
           textAnchor={textAnchor}
-          fill="#333"
+          fill="#999"
         >{`PV ${value}`}</text>
         <text
           x={ex + (cos >= 0 ? 1 : -1) * 12}
@@ -92,12 +146,12 @@ const Featured = () => {
             <Pie
               activeIndex={activeIndex}
               activeShape={renderActiveShape}
-              data={UnitsTotal}
+              data={unitsTotal}
               cx="50%"
               cy="50%"
               innerRadius={80}
               outerRadius={130}
-              fill="#f84909"
+              fill="#f26255"
               dataKey="value"
               onMouseEnter={onPieEnter}
             />

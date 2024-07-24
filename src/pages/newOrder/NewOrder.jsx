@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import "./newProduct.scss";
+import "./newOrder.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { useNavigate } from "react-router-dom";
-import { serverTimestamp, collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-const NewProduct = ({ inputs, title }) => {
+const NewOrder = ({ inputs, title }) => {
   const [file, setFile] = useState(null);
   const [data, setData] = useState({});
-  const [progressper] = useState(null);
 
   useEffect(() => {
     const uploadFile = () => {
@@ -37,7 +35,12 @@ const NewProduct = ({ inputs, title }) => {
 
   const handleInput = (e) => {
     const id = e.target.id;
-    const value = e.target.value;
+    let value = e.target.value;
+    if (id === "amount") {
+      value = Number(value); // Conversion of amount to a number
+    } else if (id === "orderDate") {
+      value = new Date(value); // Conversion of date string to Date object
+    }
     setData({ ...data, [id]: value });
   };
 
@@ -49,9 +52,10 @@ const NewProduct = ({ inputs, title }) => {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, "products"), {
+      await addDoc(collection(db, "orders"), {
         ...data,
-        timeStamp: serverTimestamp(),
+        amount: Number(data.amount), // to ensure that amount is saved as a number
+        orderDate: Timestamp.fromDate(new Date(data.orderDate)), // Conversion of Date object to Firestore Timestamp datatype
       });
       navigate(-1);
     } catch (err) {
@@ -60,42 +64,21 @@ const NewProduct = ({ inputs, title }) => {
   };
 
   return (
-    <div className="newProduct">
+    <div className="newOrder">
       <Sidebar />
-      <div className="newProductContainer">
+      <div className="newOrderContainer">
         <Navbar />
-        <div className="protop">
+        <div className="ordertop">
           <h1>{title}</h1>
           <button onClick={GoBackHandler} className="GoBackButton">
             Go Back
           </button>
         </div>
-        <div className="probottom">
-          <div className="proleft">
-            <img
-              src={
-                file
-                  ? URL.createObjectURL(file)
-                  : "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/495px-No-Image-Placeholder.svg.png?20200912122019"
-              }
-              alt=""
-            />
-          </div>
-          <div className="proright">
+        <div className="orderbottom">
+          <div className="orderright">
             <form onSubmit={handleAdd}>
-              <div className="productformInput">
-                <label htmlFor="file">
-                  Image: <CloudUploadRoundedIcon className="proicon" />
-                </label>
-                <input
-                  type="file"
-                  id="file"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  style={{ display: "none" }}
-                />
-              </div>
               {inputs.map((input) => (
-                <div className="productformInput" key={input.id}>
+                <div className="orderformInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
                     id={input.id}
@@ -105,12 +88,7 @@ const NewProduct = ({ inputs, title }) => {
                   />
                 </div>
               ))}
-              <button
-                disabled={progressper !== null && progressper < 100}
-                type="submit"
-              >
-                Send
-              </button>
+              <button type="submit">Send</button>
             </form>
           </div>
         </div>
@@ -119,4 +97,4 @@ const NewProduct = ({ inputs, title }) => {
   );
 };
 
-export default NewProduct;
+export default NewOrder;

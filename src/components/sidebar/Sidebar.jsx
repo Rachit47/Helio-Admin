@@ -1,4 +1,6 @@
 import { useContext } from "react";
+import { signOut } from "firebase/auth"; // Import signOut from Firebase
+import { auth } from "../../firebase"; // Import your Firebase configuration
 import "./sidebar.scss";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import Person4RoundedIcon from "@mui/icons-material/Person4Rounded";
@@ -15,6 +17,16 @@ import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import { Link } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 const Sidebar = () => {
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      await signOut(auth);
+      sessionStorage.removeItem("user");
+      window.location.replace("/login");
+    } catch (error) {
+      console.log("Error signing out: ", error);
+    }
+  };
   const { dispatch } = useContext(DarkModeContext);
   return (
     <div className={"sidebar"}>
@@ -52,10 +64,6 @@ const Sidebar = () => {
               <span>Orders</span>
             </li>
           </Link>
-          {/* <li>
-            <LocalShippingRoundedIcon className="icon" />
-            <span>Delivery</span>
-          </li> */}
           <p className="title">USEFUL</p>
           <Link to="/stats" style={{ textDecoration: "none" }}>
             <li>
@@ -87,7 +95,9 @@ const Sidebar = () => {
           </li>
           <li>
             <ExitToAppRoundedIcon className="icon" />
-            <span>Logout</span>
+            <div onClick={handleLogout}>
+              <span>Logout</span>
+            </div>
           </li>
         </ul>
       </div>

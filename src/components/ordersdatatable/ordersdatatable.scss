@@ -49,8 +49,34 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    .orderlink {
+      font-family: "Saira", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 800;
+      text-decoration: none;
+      color: green;
+      font-size: 18px;
+      border: 1px solid green;
+      padding: 5px;
+      border-radius: 8px;
+      border-width: 2px;
+      cursor: pointer;
+    }
   }
+  .paymentMethod {
+    font-family: "Saira", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    &.Online.Mode {
+      color: rgb(4, 176, 4);
+      background-color: rgba(0, 128, 0, 0.151);
+    }
 
+    &.Cash.On.Delivery {
+      color: rgb(9, 91, 222);
+      background-color: rgba(36, 115, 242, 0.212);
+    }
+  }
   .ordercellAction {
     display: flex;
     gap: 15px;

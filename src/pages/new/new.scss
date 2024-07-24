@@ -54,7 +54,7 @@
           justify-content: space-around;
 
           .formInput {
-            width: 40%;
+            width: 80%;
 
             label {
               font-size: 20px;
@@ -84,14 +84,18 @@
             font-size: 20px;
             font-family: "Saira", sans-serif;
             font-optical-sizing: auto;
-            width: 150px;
+            width: 250px;
             padding: 10px;
             border: none;
             background-color: teal;
             color: white;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+
+            &:disabled {
+              background-color: rgba(0, 128, 128, 0.136);
+              cursor: not-allowed;
+            }
           }
         }
       }

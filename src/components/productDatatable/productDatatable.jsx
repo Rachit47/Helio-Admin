@@ -1,25 +1,51 @@
 import "./productDatatable.scss";
-import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { productColumns, productRows } from "../../datatablesource";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { productColumns } from "../../datatablesource";
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase";
 const ProductDatatable = () => {
-  const [data, setData] = useState(productRows);
+  const [data, setData] = useState([]);
 
-  const handleDelete = (id) => {
-    setData(data.filter((item) => item.id !== id));
-  };
-
-  const Navigate = useNavigate();
-  const GoBackHandler = () => {
-    Navigate(-1);
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, "products"),
+      (snapshot) => {
+        let list = [];
+        snapshot.docs.forEach((doc) => {
+          const docdata = doc.data();
+          list.push({
+            id: doc.id,
+            img: docdata.img,
+            title: docdata.title,
+            price: docdata.price,
+            quantity: docdata.quantity,
+          });
+        });
+        setData(list);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+    return () => {
+      unsub();
+    };
+  }, []);
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, "products", id));
+      setData(data.filter((data) => data.id !== id));
+    } catch (err) {
+      console.log(err);
+    }
   };
   const actionColumn = [
     {
       field: "action",
       headerName: "Action",
-      width: 200,
+      width: 180,
       renderCell: (params) => {
         return (
           <div className="procellAction">
@@ -47,9 +73,6 @@ const ProductDatatable = () => {
         <Link to="/products/new" className="prolink">
           Add New
         </Link>
-        <button onClick={GoBackHandler} className="GoBackButton">
-          Go Back
-        </button>
       </div>
       <DataGrid
         className="prodatagrid"

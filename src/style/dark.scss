@@ -4,7 +4,7 @@
   color: rgb(185, 181, 181);
 
   .chartGrid {
-    stroke: rgba(240, 234, 234, 0.219);
+    stroke: rgba(126, 126, 126, 0.886);
   }
 
   .table {
@@ -103,11 +103,17 @@
   .new {
     .newContainer {
       background-color: #171717;
-      .top {
+      .top,
+      .bottom {
         background-color: #171717;
-      }
-      .right {
-        background-color: #171717;
+        .right {
+          background-color: #171717;
+          form {
+            input {
+              color: #8e8888;
+            }
+          }
+        }
       }
     }
   }
@@ -119,6 +125,27 @@
       }
       .proright {
         background-color: #171717;
+        form {
+          input {
+            color: #868484;
+          }
+        }
+      }
+    }
+  }
+  .newOrder {
+    .newOrderContainer {
+      background-color: #171717;
+      .Ordertop {
+        background-color: #171717;
+      }
+      .Orderright {
+        background-color: #171717;
+        form {
+          input {
+            color: #868484;
+          }
+        }
       }
     }
   }
@@ -172,7 +199,19 @@
   .ProductClass {
     background-color: #171717;
   }
-  .piechart {
+  .pieChart {
     background-color: #171717;
+    .PieContainer {
+      background-color: #171717;
+    }
+    .piechart {
+      background-color: #171717;
+    }
+  }
+}
+.editFormOverlay {
+  background: rgba(0, 0, 0, 0.7);
+  .editFormContainer {
+    background: #333;
   }
 }
