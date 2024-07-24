@@ -79,7 +79,7 @@ const StatsGraphs = () => {
   return (
     <div className="statsgraph">
       <div className="statsTitle">Product Units Sold Per Month</div>
-      <ResponsiveContainer width="100%" aspect={2 / 1.2}>
+      <ResponsiveContainer width="100%" aspect={2 / 1.2} className="StatsContainer">
         <LineChart width={500} height={300}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis

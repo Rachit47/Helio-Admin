@@ -208,10 +208,22 @@
       background-color: #171717;
     }
   }
-}
-.editFormOverlay {
-  background: rgba(0, 0, 0, 0.7);
-  .editFormContainer {
-    background: #333;
+  .statsContainer {
+    background-color: #171717;
+  }
+  .statsgraph {
+    background-color: #171717;
+    .statsTitle {
+      background-color: #171717;
+    }
+    .StatsContainer {
+      background-color: #171717;
+    }
+  }
+  .editFormOverlay {
+    background: rgba(0, 0, 0, 0.7);
+    .editFormContainer {
+      background: #333;
+    }
   }
 }
