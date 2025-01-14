@@ -1,4 +1,4 @@
-import "./home.scss";
+// import "./home.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import Widget from "../../components/widget/Widget";
@@ -132,17 +132,18 @@ const Home = () => {
   //transfering Transactional Data to other file
   setTransactionalData(TransactionalData);
   return (
-    <div className="home">
+    <div className="flex flex-col md:flex-row min-h-screen">
       <Sidebar />
-      <div className="homeContainer">
+      <div className="flex-1 flex flex-col">
         <Navbar />
-        <div className="widgets">
+        <hr className="border-gray-300" />
+        <div className="flex flex-wrap gap-5 lg:gap-8 p-3 mb-0 md:p-5">
           <Widget type="user" />
           <Widget type="order" />
           <Widget type="earning" />
           <Widget type="balance" />
         </div>
-        <div className="charts">
+        <div className="flex flex-col lg:flex-row gap-5 lg:gap-8 p-3 pt-0 md:p-5">
           <Featured />
           <Chart
             title="Monthly Revenue"

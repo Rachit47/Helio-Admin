@@ -6,61 +6,61 @@
     flex: 6;
   }
 
-  @media (max-width: 990px) {
-    .listContainer {
-      flex: 5; /* Adjust flex value for smaller screens */
-    }
-  }
+  // @media (max-width: 990px) {
+  //   .listContainer {
+  //     flex: 5; /* Adjust flex value for smaller screens */
+  //   }
+  // }
 
-  @media (max-width: 770px) {
-    .listContainer {
-      flex: 4;
-    }
-  }
+  // @media (max-width: 770px) {
+  //   .listContainer {
+  //     flex: 4;
+  //   }
+  // }
 
-  @media (max-width: 670px) {
-    .listContainer {
-      flex: 3;
-    }
-  }
+  // @media (max-width: 670px) {
+  //   .listContainer {
+  //     flex: 3;
+  //   }
+  // }
 
-  @media (max-width: 570px) {
-    .listContainer {
-      flex: 2;
-    }
-  }
+  // @media (max-width: 570px) {
+  //   .listContainer {
+  //     flex: 2;
+  //   }
+  // }
 
-  @media (max-width: 480px) {
-    .listContainer {
-      flex: 1;
-    }
-  }
+  // @media (max-width: 480px) {
+  //   .listContainer {
+  //     flex: 1;
+  //   }
+  // }
 
-  @media (max-width: 370px) {
-    .listContainer {
-      flex: 0.5; /* Example adjustment for very small screens */
-    }
-  }
+  // @media (max-width: 370px) {
+  //   .listContainer {
+  //     flex: 0.5; /* Example adjustment for very small screens */
+  //   }
+  // }
 
-  @media (max-width: 330px) {
-    .listContainer {
-      flex: 0.3; /* Example adjustment for very small screens */
-    }
-  }
+  // @media (max-width: 330px) {
+  //   .listContainer {
+  //     flex: 0.3; /* Example adjustment for very small screens */
+  //   }
+  // }
 
-  @media (max-width: 300px) {
-    .listContainer {
-      flex: 0.2; /* Example adjustment for very small screens */
-    }
-  }
+  // @media (max-width: 300px) {
+  //   .listContainer {
+  //     flex: 0.2; /* Example adjustment for very small screens */
+  //   }
+  // }
 
-  @media (max-width: 100px) {
-    .list {
-      flex-direction: column; /* Example for extremely small screens */
-    }
+  // @media (max-width: 100px) {
+  //   .list {
+  //     flex-direction: column; /* Example for extremely small screens */
+  //   }
 
-    .listContainer {
-      flex: 1; /* Adjust as needed */
-    }
-  }
+  //   .listContainer {
+  //     flex: 1; /* Adjust as needed */
+  //   }
+  // }
 }

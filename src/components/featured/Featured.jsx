@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
-import "./featured.scss";
 import { onSnapshot, collection } from "firebase/firestore";
 import { db } from "../../firebase";
+
 const Featured = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [productsData, setProductsData] = useState([]);
@@ -57,7 +57,7 @@ const Featured = () => {
   }
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <div className="text-gray-500 text-center">Loading...</div>;
   }
 
   const renderActiveShape = (props) => {
@@ -138,19 +138,21 @@ const Featured = () => {
   };
 
   return (
-    <div className="pieChart">
-      <div className="Pietitle">Total units sold per product</div>
-      <div className="PieContainer">
-        <ResponsiveContainer width="100%" height={400}>
+    <div className="flex-1 lg:flex-[5] shadow-[4px_6px_15px_2px_rgba(201,201,201,0.6)] relative transition-transform duration-300 hover:scale-105 hover:shadow-[4px_6px_15px_2px_rgba(201,201,201,0.6)] p-4 mr-4 mt-0 text-gray-500 rounded-lg">
+      <h3 className="font-bold font-saira text-lg mb-4 text-center">
+        Total Units Sold per Product
+      </h3>
+      <div className="w-full h-[350px] flex items-center justify-center">
+        <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               activeIndex={activeIndex}
               activeShape={renderActiveShape}
               data={unitsTotal}
-              cx="50%"
-              cy="50%"
-              innerRadius={80}
-              outerRadius={130}
+              cx="50%" // Center horizontally
+              cy="50%" // Center vertically
+              innerRadius="60%" // Relative to container size
+              outerRadius="80%" // Relative to container size
               fill="#f26255"
               dataKey="value"
               onMouseEnter={onPieEnter}

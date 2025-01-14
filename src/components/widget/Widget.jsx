@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./widget.scss";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
@@ -30,7 +29,7 @@ const Widget = ({ type }) => {
   };
 
   useEffect(() => {
-    // Real-time listener for total users
+    // Real-time listeners for users, orders, and balance
     const unsubTotalUsers = onSnapshot(
       collection(db, "users"),
       (snapshot) => {
@@ -41,7 +40,6 @@ const Widget = ({ type }) => {
       }
     );
 
-    // Real-time listener for total orders
     const unsubTotalOrders = onSnapshot(
       collection(db, "orders"),
       (snapshot) => {
@@ -67,9 +65,7 @@ const Widget = ({ type }) => {
       }
     );
 
-    //Extracting the end-points (dates) of current month and the last month
     const today = new Date();
-
     const firstDayOfThisMonth = new Date(
       today.getFullYear(),
       today.getMonth(),
@@ -132,14 +128,12 @@ const Widget = ({ type }) => {
       );
     };
 
-    // Fetch data initially
     fetchUserDiffData();
     fetchOrderDiffData();
 
-    // Real-time listener for user statistics
     const unsubUserStats = onSnapshot(
       collection(db, "users"),
-      async (snapshot) => {
+      async () => {
         await fetchUserDiffData();
       },
       (error) => {
@@ -147,10 +141,9 @@ const Widget = ({ type }) => {
       }
     );
 
-    // Real-time listener for order statistics
     const unsubOrderStats = onSnapshot(
       collection(db, "orders"),
-      async (snapshot) => {
+      async () => {
         await fetchOrderDiffData();
       },
       (error) => {
@@ -168,7 +161,6 @@ const Widget = ({ type }) => {
   }, []);
 
   let totaltransactionEarnings = 0;
-
   const transactiondata = getTransactionalData();
   transactiondata.forEach((t) => {
     totaltransactionEarnings += t.Total;
@@ -250,33 +242,41 @@ const Widget = ({ type }) => {
   }
 
   return (
-    <div className="widget">
-      <div className="left">
-        <span className="title">{data.title}</span>
-        <span className="counter">
-          {data.isMoney && "$"} {data.value}
-        </span>
-        <span className="link">
-          <Link to={`${data.page}`} style={{ textDecoration: "none" }}>
-            {data.link}
-          </Link>
-        </span>
+    <div className="widget-container flex flex-wrap justify-center gap-4  mr-0">
+      <div className="widget p-4 pt-2 pb-2 rounded-lg h-auto  lg:w-[295px] md:w-[730px] sm:w-[730px] font-saira shadow-[4px_6px_15px_2px_rgba(201,201,201,0.6)] relative transition-transform duration-300 hover:scale-105 hover:shadow-[4px_6px_15px_2px_rgba(201,201,201,0.6)] ">
+        <div className="left flex flex-col justify-between">
+          <span className="title font-saira text-gray-500 text-sm font-bold sm:text-base">
+            {data.title}
+          </span>
+          <span className="counter font-saira text-xl font-light sm:text-2xl">
+            {data.isMoney && "$"} {data.value}
+          </span>
+          <span className="link font-saira text-gray-400 text-xs sm:text-sm">
+            <Link to={`${data.page}`} className="underline font-saira">
+              {data.link}
+            </Link>
+          </span>
+        </div>
+
+        {/* Percentage positioned within the widget */}
+        {data.showDiff && (
+          <div
+            className={`percentage absolute top-2 right-2 text-sm font-saira ${
+              data.sign ? "text-red-500" : "text-green-500"
+            }`}
+          >
+            {data.sign ? <ExpandMoreRoundedIcon /> : <ExpandLessRoundedIcon />}
+            {data.percentDiff}%
+          </div>
+        )}
+
+        {/* Icon positioned within the widget */}
+        <div className="absolute bottom-4 right-4 flex items-center justify-center">
+          {data.icon}
+        </div>
       </div>
-      <div className="right">
-        {data.showDiff &&
-          (data.sign === false ? (
-            <div className="percentage positive">
-              <ExpandLessRoundedIcon />
-              {data.percentDiff}%
-            </div>
-          ) : (
-            <div className="percentage negative">
-              <ExpandMoreRoundedIcon />
-              {data.percentDiff}%
-            </div>
-          ))}
-        {data.icon}
-      </div>
+
+      {/* Repeat more Widgets */}
     </div>
   );
 };

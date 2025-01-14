@@ -1,36 +1,34 @@
 @import url("https://fonts.googleapis.com/css2?family=Federant&family=Keania+One&family=Orbitron:wght@400..900&display=swap");
+
 .datatable {
-  height: 600px;
-  padding: 20px;
-  .datagrid .MuiDataGrid-columnHeaders {
-    display: flex;
-    justify-content: center;
-  }
+  max-width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Avoid horizontal scrolling */
+  height: auto;
 
-  .datagrid .MuiDataGrid-columnHeaderTitleContainer {
-    display: flex;
-    justify-content: center;
+  .datagrid {
     width: 100%;
-  }
-  .datagrid .MuiDataGrid-cell {
-    justify-content: space-evenly;
-    text-align: center;
-    font-family: "Saira", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
-  }
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 
-  .datagrid .MuiDataGrid-cellContent {
-    text-align: center;
-    font-family: "Saira", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
+    .MuiDataGrid-columnHeaders {
+      justify-content: center;
+    }
+
+    .MuiDataGrid-cell,
+    .MuiDataGrid-cellContent {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
   }
 
   .datatableTitle {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-family: "Saira", sans-serif;
-    font-optical-sizing: auto;
     font-weight: 500;
     color: rgb(119, 119, 119);
     margin-bottom: 10px;
@@ -40,52 +38,167 @@
 
     .link {
       font-family: "Saira", sans-serif;
-      font-optical-sizing: auto;
       font-weight: 800;
       text-decoration: none;
       color: green;
-      font-size: 18px;
+      font-size: 1rem;
       border: 1px solid green;
       padding: 5px;
       border-radius: 8px;
-      border-width: 2px;
       cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: green;
+        color: white;
+      }
     }
   }
 
   .cellWithImg {
     display: flex;
     align-items: center;
-    justify-items: space-evenly;
+
     .cellImg {
       width: 32px;
       height: 32px;
       border-radius: 50%;
       object-fit: cover;
-      margin-right: 20px;
+      margin-right: 10px;
     }
   }
+
   .cellAction {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     justify-content: center;
+
+    .viewButton,
+    .deleteButton {
+      font-family: "Saira", sans-serif;
+      font-weight: 800;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
 
     .viewButton {
       color: darkblue;
-      font-family: "Saira", sans-serif;
-      font-optical-sizing: auto;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
     }
 
     .deleteButton {
       color: crimson;
-      font-family: "Saira", sans-serif;
-      font-optical-sizing: auto;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
+    }
+  }
+
+  /* Responsive Design */
+  @media screen and (max-width: 1200px) {
+    .datatable {
+      padding: 15px;
+      .datatableTitle {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .datatable {
+      padding: 10px;
+
+      .datatableTitle {
+        font-size: 1rem;
+      }
+
+      .cellWithImg .cellImg {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+      }
+
+      .cellAction {
+        gap: 8px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .datatable {
+      padding: 5px;
+
+      .datatableTitle {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+
+        .link {
+          font-size: 0.875rem;
+          padding: 3px;
+        }
+      }
+    }
+  }
+  @media screen and (max-width: 375px) {
+    .datatable {
+      padding: 5px;
+
+      .datatableTitle {
+        font-size: 0.9rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+
+        .link {
+          font-size: 0.8rem;
+          padding: 3px 5px;
+        }
+      }
+
+      .cellWithImg .cellImg {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+      }
+
+      .cellAction {
+        gap: 5px;
+
+        .viewButton,
+        .deleteButton {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 360px) {
+    .datatable {
+      padding: 5px;
+
+      .datatableTitle {
+        font-size: 0.85rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+
+        .link {
+          font-size: 0.75rem;
+          padding: 2px 4px;
+        }
+      }
+
+      .cellWithImg .cellImg {
+        width: 18px;
+        height: 18px;
+        margin-right: 5px;
+      }
+
+      .cellAction {
+        gap: 4px;
+
+        .viewButton,
+        .deleteButton {
+          font-size: 0.7rem;
+        }
+      }
     }
   }
 }

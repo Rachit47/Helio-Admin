@@ -76,16 +76,19 @@
                 font-optical-sizing: auto;
                 font-weight: 500;
                 font-size: 16px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
               }
             }
           }
         }
       }
       .right {
-        flex: 2;
+        flex: 1;
         -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
         box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-        padding: 20px;
+        padding: 40px;
         position: relative;
         h2 {
           font-family: "Saira", sans-serif;
@@ -142,17 +145,23 @@
         }
       }
     }
+    .bottom {
+      -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+      box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+      margin: 10px 20px;
+    }
+    .title {
+      font-size: 16px;
+      color: rgb(131, 128, 128);
+      margin-bottom: 20px;
+    }
   }
 }
-
-.bottom {
-  -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-  box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-
-  margin: 10px 20px;
-}
-.title {
-  font-size: 16px;
-  color: rgb(131, 128, 128);
-  margin-bottom: 20px;
+@media (max-width: 768px) {
+  .singleContainer {
+    flex-direction: column;
+    .left-right {
+      flex-direction: column;
+    }
+  }
 }

@@ -9,6 +9,7 @@ const List = () => {
       <Sidebar />
       <div className="listContainer">
         <Navbar />
+        <hr className="border-gray-300" />
         <Datatable />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import "./chart.scss";
+import React from "react";
 import {
   AreaChart,
   Area,
@@ -11,12 +11,12 @@ import {
 
 const Chart = ({ title, aspect, data }) => {
   return (
-    <div className="chart">
-      <div className="title">{title}</div>
+    <div className="flex-1 lg:flex-[5] shadow-[4px_6px_15px_2px_rgba(201,201,201,0.6)] relative transition-transform duration-300 hover:scale-105 hover:shadow-[4px_6px_15px_2px_rgba(201,201,201,0.6)] p-4 mr-4 mt-0 text-gray-500 rounded-lg">
+      <div className="p-2 font-bold text-lg font-saira text-center">
+        {title}
+      </div>
       <ResponsiveContainer width="100%" aspect={aspect}>
         <AreaChart
-          width={730}
-          height={250}
           data={data}
           margin={{ top: 10, right: 30, left: 5, bottom: 0 }}
         >
@@ -27,8 +27,7 @@ const Chart = ({ title, aspect, data }) => {
             </linearGradient>
           </defs>
           <XAxis dataKey="name" stroke="gray" />
-
-          <CartesianGrid strokeDasharray="3 3" className="chartGrid" />
+          <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" />
           <YAxis />
           <Tooltip />
           <Area

@@ -9,6 +9,7 @@ const Productlist = () => {
       <Sidebar />
       <div className="prolistContainer">
         <Navbar />
+        <hr className="border-gray-300" />
         <ProductDatatable />
       </div>
     </div>

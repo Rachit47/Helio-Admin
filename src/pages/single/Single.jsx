@@ -174,7 +174,7 @@ const Single = () => {
         </div>
         {/* Form for Adding Single Spending Data */}
         <div className="bottom">
-          <Chart aspect={3 / 1} title="Customer Spending" data={spendingData} />
+          <Chart aspect={2 / 1} title="Customer Spending" data={spendingData} />
         </div>
       </div>
     </div>
